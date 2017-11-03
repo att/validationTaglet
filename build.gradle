@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group   = 'com.att.detsusl.taglets'
+version = '0.0.1-SNAPSHOT'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}
+ 
+def nexusBaseUrl    = "http://mavencentral.it.att.com:8084/nexus"
+
+repositories {
+    jcenter()
+    maven {
+        url "${nexusBaseUrl}/content/repositories/att-public-group/"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    // Note that 
+    implementation files("${System.getProperty('java.home')}/../lib/tools.jar")
+    implementation "javax.validation:validation-api:1.1.0.Final"
+    implementation "org.hibernate:hibernate-validator:5.4.1.Final"
+    implementation "org.glassfish:javax.el:3.0.1-b08"
+
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.8.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8.2'
+    
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.2.28"
+    testCompile "org.assertj:assertj-core:3.6.1"
+    testCompile "org.jsoup:jsoup:1.10.3"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "${nexusBaseUrl}/content/repositories/att-repository-" +
+                (project.version.endsWith("-SNAPSHOT") ? "snapshots" : "releases")
+            credentials { username = "${mavenUser}"; password = "${mavenPassword}" }
+        }
+    }
+}
