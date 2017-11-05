@@ -24,7 +24,9 @@ repositories {
 }
 
 dependencies {
-    // Note that 
+    // Note that this needs to be built with a JDK, not a JRE, but the "java.home"
+    // system property will point to the JRE within the JDK, which should be one
+    // directory down from the root, so we specify "../lib/tools.jar" for a correct reference.
     implementation files("${System.getProperty('java.home')}/../lib/tools.jar")
     implementation "javax.validation:validation-api:1.1.0.Final"
     implementation "org.hibernate:hibernate-validator:5.4.1.Final"
